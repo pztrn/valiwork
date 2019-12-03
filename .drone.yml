@@ -1,0 +1,83 @@
+---
+kind: pipeline
+type: docker
+name: build
+
+steps:
+  - name: notify-start
+    image: pztrn/discordrone
+    settings:
+      webhook_id:
+        from_secret: discord_webhook_id
+      webhook_token:
+        from_secret: discord_webhook_secret
+      message: 'Starting testing, benchmarking and linting for **{{repo.name}}#{{build.number}}@{{commit.sha}}** @ {{datetime build.started "02-Jan-2006 15:04:05 MST" "Asia/Yekaterinburg"}} (See {{build.link}} for logs).'
+
+  - name: lint
+    image: golangci/golangci-lint:latest
+    environment:
+      CGO_ENABLED: 0
+    commands:
+      - golangci-lint run
+    depends_on:
+      - notify-start
+
+  - name: test
+    image: golang:1.13.4-alpine
+    environment:
+      CGO_ENABLED: 0
+    commands:
+      - go test -test.v ./...
+    depends_on:
+      - notify-start
+
+  - name: test-race
+    image: golang:1.13.4-alpine
+    environment:
+      CGO_ENABLED: 0
+    commands:
+      - go test -race -test.v ./...
+    depends_on:
+      - notify-start
+
+  - name: benchmark
+    image: golang:1.13.4-alpine
+    environment:
+      CGO_ENABLED: 0
+    commands:
+      - go test -benchmem -run=^$ go.dev.pztrn.name/valiwork -bench . 
+    depends_on:
+      - notify-start
+
+  - name: benchmark-race
+    image: golang:1.13.4-alpine
+    environment:
+      CGO_ENABLED: 0
+    commands:
+      - go test -benchmem -run=^$ go.dev.pztrn.name/valiwork -race -bench . 
+    depends_on:
+      - notify-start
+
+  - name: notify-end
+    when:
+      status:
+      - success
+      - failure
+    image: pztrn/discordrone
+    settings:
+      webhook_id:
+        from_secret: discord_webhook_id
+      webhook_token:
+        from_secret: discord_webhook_secret
+      message: "
+        {{#success build.status}}
+          **{{repo.name}}#{{build.number}}@{{commit.sha}}** tested, benchmarked and linted successfully.
+        {{ else }}
+          **{{repo.name}}#{{build.number}}@{{commit.sha}}** failed. See {{build.link}}.
+        {{/success}}"
+    depends_on:
+      - benchmark
+      - benchmark-race
+      - lint
+      - test
+      - test-race
