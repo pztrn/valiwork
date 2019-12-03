@@ -1,6 +1,6 @@
 # ValiWork - validation framework
 
-[![Build Status](https://ci.dev.pztrn.name/api/badges/pztrn/valiwork/status.svg)](https://ci.dev.pztrn.name/pztrn/valiwork) [![Discord](https://img.shields.io/discord/632359730089689128)](https://discord.gg/CvUnEpM) ![Keybase XLM](https://img.shields.io/keybase/xlm/pztrn)
+[![GoDoc](https://godoc.org/go.dev.pztrn.name/valiwork?status.svg)](https://godoc.org/go.dev.pztrn.name/valiwork) [![Build Status](https://ci.dev.pztrn.name/api/badges/pztrn/valiwork/status.svg)](https://ci.dev.pztrn.name/pztrn/valiwork) [![Discord](https://img.shields.io/discord/632359730089689128)](https://discord.gg/CvUnEpM) ![Keybase XLM](https://img.shields.io/keybase/xlm/pztrn)
 
 ValiWork is a validation framework that provides sane API and ability to write own validators that returns arbitrary things. It is goroutine-safe and fast.
 

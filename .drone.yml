@@ -34,6 +34,7 @@ steps:
   - name: test-race
     image: golang:1.13.4-alpine
     commands:
+      - apk add gcc
       - go test -race -test.v ./...
     depends_on:
       - notify-start
@@ -50,6 +51,7 @@ steps:
   - name: benchmark-race
     image: golang:1.13.4-alpine
     commands:
+      - apk add gcc
       - go test -benchmem -run=^$ go.dev.pztrn.name/valiwork -race -bench . 
     depends_on:
       - notify-start
