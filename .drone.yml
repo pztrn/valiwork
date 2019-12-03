@@ -33,8 +33,6 @@ steps:
 
   - name: test-race
     image: golang:1.13.4-alpine
-    environment:
-      CGO_ENABLED: 0
     commands:
       - go test -race -test.v ./...
     depends_on:
@@ -51,8 +49,6 @@ steps:
 
   - name: benchmark-race
     image: golang:1.13.4-alpine
-    environment:
-      CGO_ENABLED: 0
     commands:
       - go test -benchmem -run=^$ go.dev.pztrn.name/valiwork -race -bench . 
     depends_on:

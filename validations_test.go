@@ -42,6 +42,7 @@ func TestRegisterValidator(t *testing.T) {
 
 	for _, testCase := range testCases {
 		err := RegisterValidator(testCase.ValidatorName, testCase.ValidatorFunc)
+
 		if !testCase.ShouldFail {
 			require.Nil(t, err)
 		} else {
@@ -88,7 +89,7 @@ func TestValidate(t *testing.T) {
 
 	testString := " I am test string"
 
-	RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
+	_ = RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
 		var errs []interface{}
 
 		stringToValidate, ok := thing.(string)
@@ -98,7 +99,7 @@ func TestValidate(t *testing.T) {
 		}
 
 		if strings.HasPrefix(stringToValidate, " ") {
-			errs = append(errs, errors.New("string starts with whitespace, invalid!"))
+			errs = append(errs, errors.New("string starts with whitespace, invalid"))
 		}
 
 		return errs
@@ -116,7 +117,7 @@ func BenchmarkValidate(b *testing.B) {
 
 	testString := " I am test $tring"
 
-	RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
+	_ = RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
 		var errs []interface{}
 
 		stringToValidate, ok := thing.(string)
@@ -126,11 +127,11 @@ func BenchmarkValidate(b *testing.B) {
 		}
 
 		if strings.HasPrefix(stringToValidate, " ") {
-			errs = append(errs, errors.New("string starts with whitespace, invalid!"))
+			errs = append(errs, errors.New("string starts with whitespace, invalid"))
 		}
 
 		if strings.Contains(stringToValidate, "$") {
-			errs = append(errs, errors.New("string starts with whitespace, invalid!"))
+			errs = append(errs, errors.New("string starts with whitespace, invalid"))
 		}
 
 		return errs
@@ -150,7 +151,7 @@ func BenchmarkValidateAsync(b *testing.B) {
 
 	testString := " I am test $tring"
 
-	RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
+	_ = RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
 		var errs []interface{}
 
 		stringToValidate, ok := thing.(string)
@@ -160,11 +161,11 @@ func BenchmarkValidateAsync(b *testing.B) {
 		}
 
 		if strings.HasPrefix(stringToValidate, " ") {
-			errs = append(errs, errors.New("string starts with whitespace, invalid!"))
+			errs = append(errs, errors.New("string starts with whitespace, invalid"))
 		}
 
 		if strings.Contains(stringToValidate, "$") {
-			errs = append(errs, errors.New("string starts with whitespace, invalid!"))
+			errs = append(errs, errors.New("string starts with whitespace, invalid"))
 		}
 
 		return errs
@@ -214,7 +215,7 @@ func TestUnregisterValidator(t *testing.T) {
 func TestUnregisterValidatorNotRegisteredValidator(t *testing.T) {
 	initializeValidatorsStorage()
 
-	err := UnregisterValidator("this is definetely not registered thing")
+	err := UnregisterValidator("this is definitely not registered thing")
 	require.NotNil(t, err)
 }
 
@@ -232,6 +233,7 @@ func BenchmarkUnregisterValidator(b *testing.B) {
 	}
 
 	b.StartTimer()
+
 	for i := 0; i < b.N; i++ {
 		_ = UnregisterValidator("string_test_validator_" + strconv.Itoa(i))
 	}
@@ -253,6 +255,7 @@ func BenchmarkUnregisterValidatorAsync(b *testing.B) {
 	var w sync.WaitGroup
 
 	b.StartTimer()
+
 	for i := 0; i < b.N; i++ {
 		w.Add(1)
 

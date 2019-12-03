@@ -20,7 +20,7 @@ func main() {
 
 	//stringToValidate := " I am pretty b@d $tring"
 
-	valiwork.RegisterValidator(stringValidatorName, stringValidator)
+	_ = valiwork.RegisterValidator(stringValidatorName, stringValidator)
 }
 
 func stringValidator(thing interface{}, optional ...interface{}) []interface{} {

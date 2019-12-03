@@ -3,7 +3,6 @@ package valiwork
 import (
 	// stdlib
 	"log"
-	"sync"
 
 	// local
 	"go.dev.pztrn.name/valiwork/validators"
@@ -11,7 +10,6 @@ import (
 
 var (
 	registeredValidators map[string]validators.ValidatorFunc
-	rvMutex              sync.RWMutex
 )
 
 // nolint
@@ -29,9 +27,7 @@ func RegisterValidator(validatorName string, validator validators.ValidatorFunc)
 		log.Println("Trying to register validator: '" + validatorName + "'...")
 	}
 
-	//rvMutex.RLock()
 	_, found := registeredValidators[validatorName]
-	//rvMutex.RUnlock()
 
 	if found {
 		if DEBUG {
@@ -41,9 +37,7 @@ func RegisterValidator(validatorName string, validator validators.ValidatorFunc)
 		return ErrValidatorAlreadyRegistered
 	}
 
-	//rvMutex.Lock()
 	registeredValidators[validatorName] = validator
-	//rvMutex.Unlock()
 
 	return nil
 }
@@ -55,9 +49,7 @@ func UnregisterValidator(validatorName string) error {
 		log.Println("Trying to unregister validator '" + validatorName + "'...")
 	}
 
-	//rvMutex.RLock()
 	_, found := registeredValidators[validatorName]
-	//rvMutex.RUnlock()
 
 	if !found {
 		if DEBUG {
@@ -67,9 +59,7 @@ func UnregisterValidator(validatorName string) error {
 		return ErrValidatorNotRegistered
 	}
 
-	//rvMutex.Lock()
 	delete(registeredValidators, validatorName)
-	//rvMutex.Unlock()
 
 	return nil
 }
@@ -79,9 +69,7 @@ func UnregisterValidator(validatorName string) error {
 func Validate(validatorName string, thing interface{}, optional ...interface{}) []interface{} {
 	var errs []interface{}
 
-	//rvMutex.RLock()
 	validator, found := registeredValidators[validatorName]
-	//rvMutex.RUnlock()
 
 	if !found {
 		errs = append(errs, ErrValidatorNotRegistered)
