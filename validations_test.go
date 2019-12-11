@@ -105,7 +105,7 @@ func TestValidate(t *testing.T) {
 		return errs
 	})
 
-	errs := Validate("string_test1", testString, nil)
+	errs := Validate(testString, "string_test1", nil)
 	require.NotNil(t, errs)
 	require.Len(t, errs, 1)
 }
@@ -131,7 +131,7 @@ func BenchmarkValidate(b *testing.B) {
 		}
 
 		if strings.Contains(stringToValidate, "$") {
-			errs = append(errs, errors.New("string starts with whitespace, invalid"))
+			errs = append(errs, errors.New("string contains dollar sign, invalid"))
 		}
 
 		return errs
@@ -140,7 +140,7 @@ func BenchmarkValidate(b *testing.B) {
 	b.StartTimer()
 
 	for i := 0; i < b.N; i++ {
-		_ = Validate("string_test1", testString)
+		_ = Validate(testString, "string_test1")
 	}
 }
 
@@ -179,7 +179,151 @@ func BenchmarkValidateAsync(b *testing.B) {
 		w.Add(1)
 
 		go func() {
-			_ = Validate("string_test1", testString)
+			_ = Validate(testString, "string_test1")
+
+			w.Done()
+		}()
+
+		w.Wait()
+	}
+}
+
+func TestValidateMany(t *testing.T) {
+	initializeValidatorsStorage()
+
+	testString := " I am test string"
+
+	_ = RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
+		var errs []interface{}
+
+		stringToValidate, ok := thing.(string)
+		if !ok {
+			errs = append(errs, errors.New("not a string"))
+			return errs
+		}
+
+		if strings.HasPrefix(stringToValidate, " ") {
+			errs = append(errs, errors.New("string starts with whitespace, invalid"))
+		}
+
+		return errs
+	})
+
+	_ = RegisterValidator("string_test2", func(thing interface{}, optional ...interface{}) []interface{} {
+		var errs []interface{}
+
+		stringToValidate, ok := thing.(string)
+		if !ok {
+			errs = append(errs, errors.New("not a string"))
+			return errs
+		}
+
+		if strings.HasSuffix(stringToValidate, " ") {
+			errs = append(errs, errors.New("string ends with whitespace, invalid"))
+		}
+
+		return errs
+	})
+
+	errs := ValidateMany(testString, []string{"string_test1", "string_test2"}, nil)
+	require.NotNil(t, errs)
+	require.Len(t, errs, 1)
+}
+
+func BenchmarkValidateMany(b *testing.B) {
+	b.StopTimer()
+
+	initializeValidatorsStorage()
+
+	testString := " I am test $tring"
+
+	_ = RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
+		var errs []interface{}
+
+		stringToValidate, ok := thing.(string)
+		if !ok {
+			errs = append(errs, errors.New("not a string"))
+			return errs
+		}
+
+		if strings.HasPrefix(stringToValidate, " ") {
+			errs = append(errs, errors.New("string starts with whitespace, invalid"))
+		}
+
+		return errs
+	})
+
+	_ = RegisterValidator("string_test2", func(thing interface{}, optional ...interface{}) []interface{} {
+		var errs []interface{}
+
+		stringToValidate, ok := thing.(string)
+		if !ok {
+			errs = append(errs, errors.New("not a string"))
+			return errs
+		}
+
+		if strings.Contains(stringToValidate, "$") {
+			errs = append(errs, errors.New("string contains dollar sign, invalid"))
+		}
+
+		return errs
+	})
+
+	b.StartTimer()
+
+	for i := 0; i < b.N; i++ {
+		_ = ValidateMany(testString, []string{"string_test1", "string_test2"}, nil)
+	}
+}
+
+func BenchmarkValidateManyAsync(b *testing.B) {
+	b.StopTimer()
+
+	initializeValidatorsStorage()
+
+	testString := " I am test $tring"
+
+	_ = RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
+		var errs []interface{}
+
+		stringToValidate, ok := thing.(string)
+		if !ok {
+			errs = append(errs, errors.New("not a string"))
+			return errs
+		}
+
+		if strings.HasPrefix(stringToValidate, " ") {
+			errs = append(errs, errors.New("string starts with whitespace, invalid"))
+		}
+
+		return errs
+	})
+
+	_ = RegisterValidator("string_test2", func(thing interface{}, optional ...interface{}) []interface{} {
+		var errs []interface{}
+
+		stringToValidate, ok := thing.(string)
+		if !ok {
+			errs = append(errs, errors.New("not a string"))
+			return errs
+		}
+
+		if strings.Contains(stringToValidate, "$") {
+			errs = append(errs, errors.New("string contains dollar sign, invalid"))
+		}
+
+		return errs
+	})
+
+	b.StartTimer()
+
+	var w sync.WaitGroup
+
+	for i := 0; i < b.N; i++ {
+		w.Add(1)
+
+		go func() {
+			_ = ValidateMany(testString, []string{"string_test1", "string_test2"}, nil)
 
 			w.Done()
 		}()

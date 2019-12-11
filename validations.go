@@ -42,6 +42,49 @@ func RegisterValidator(validatorName string, validator validators.ValidatorFunc)
 	return nil
 }
 
+// Validate launches validation function and returns it's result to
+// caller. Optional might be used for passing additional options to
+// validators.
+func Validate(thing interface{}, validatorName string, optional ...interface{}) []interface{} {
+	var errs []interface{}
+
+	validator, found := registeredValidators[validatorName]
+
+	if !found {
+		errs = append(errs, ErrValidatorNotRegistered)
+		return errs
+	}
+
+	errs1 := validator(thing, optional...)
+	if len(errs1) > 0 {
+		errs = append(errs, errs1...)
+	}
+
+	return errs
+}
+
+// ValidateMany launches many validators using one-line-call.
+// Optional might be used for passing parameters to validators, wher
+// key is a validator name and value (which is []interface{})
+// is a slice of parameters.
+func ValidateMany(thing interface{}, validatorNames []string, optional map[string][]interface{}) []interface{} {
+	var errs []interface{}
+
+	for _, validator := range validatorNames {
+		validatorParams, found := optional[validator]
+		if !found {
+			validatorParams = make([]interface{}, 0)
+		}
+
+		errs1 := Validate(thing, validator, validatorParams...)
+		if len(errs1) > 0 {
+			errs = append(errs, errs1...)
+		}
+	}
+
+	return errs
+}
+
 // UnregisterValidator removes registered validator from list of known
 // validators.
 func UnregisterValidator(validatorName string) error {
@@ -62,24 +105,4 @@ func UnregisterValidator(validatorName string) error {
 	delete(registeredValidators, validatorName)
 
 	return nil
-}
-
-// Validate launches validation function and returns it's result to
-// caller.
-func Validate(validatorName string, thing interface{}, optional ...interface{}) []interface{} {
-	var errs []interface{}
-
-	validator, found := registeredValidators[validatorName]
-
-	if !found {
-		errs = append(errs, ErrValidatorNotRegistered)
-		return errs
-	}
-
-	errs1 := validator(thing, optional...)
-	if len(errs1) > 0 {
-		errs = append(errs, errs1...)
-	}
-
-	return errs
 }
