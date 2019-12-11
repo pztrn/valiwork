@@ -15,6 +15,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	testString = " I am test $tring"
+)
+
 func TestRegisterValidator(t *testing.T) {
 	initializeValidatorsStorage()
 
@@ -87,8 +91,6 @@ func BenchmarkRegisterValidatorAsync(b *testing.B) {
 func TestValidate(t *testing.T) {
 	initializeValidatorsStorage()
 
-	testString := " I am test string"
-
 	_ = RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
 		var errs []interface{}
 
@@ -114,8 +116,6 @@ func BenchmarkValidate(b *testing.B) {
 	b.StopTimer()
 
 	initializeValidatorsStorage()
-
-	testString := " I am test $tring"
 
 	_ = RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
 		var errs []interface{}
@@ -148,8 +148,6 @@ func BenchmarkValidateAsync(b *testing.B) {
 	b.StopTimer()
 
 	initializeValidatorsStorage()
-
-	testString := " I am test $tring"
 
 	_ = RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
 		var errs []interface{}
@@ -190,8 +188,6 @@ func BenchmarkValidateAsync(b *testing.B) {
 
 func TestValidateMany(t *testing.T) {
 	initializeValidatorsStorage()
-
-	testString := " I am test string"
 
 	_ = RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
 		var errs []interface{}
@@ -234,8 +230,6 @@ func BenchmarkValidateMany(b *testing.B) {
 	b.StopTimer()
 
 	initializeValidatorsStorage()
-
-	testString := " I am test $tring"
 
 	_ = RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
 		var errs []interface{}
@@ -280,8 +274,6 @@ func BenchmarkValidateManyAsync(b *testing.B) {
 	b.StopTimer()
 
 	initializeValidatorsStorage()
-
-	testString := " I am test $tring"
 
 	_ = RegisterValidator("string_test1", func(thing interface{}, optional ...interface{}) []interface{} {
 		var errs []interface{}
