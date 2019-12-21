@@ -23,7 +23,7 @@ steps:
       - notify-start
 
   - name: test
-    image: golang:1.13.4-alpine
+    image: golang:1.13.5-alpine
     environment:
       CGO_ENABLED: 0
     commands:
@@ -32,33 +32,33 @@ steps:
       - notify-start
 
   - name: test-race
-    image: golang:1.13.4-stretch
+    image: golang:1.13.5-stretch
     commands:
       - go test -race -test.v ./...
     depends_on:
       - notify-start
 
   - name: benchmark
-    image: golang:1.13.4-alpine
+    image: golang:1.13.5-alpine
     environment:
       CGO_ENABLED: 0
     commands:
-      - go test -benchmem -run=^$ go.dev.pztrn.name/valiwork -bench . 
+      - go test -benchmem -run=^$ go.dev.pztrn.name/valiwork -bench .
     depends_on:
       - notify-start
 
   - name: benchmark-race
-    image: golang:1.13.4-stretch
+    image: golang:1.13.5-stretch
     commands:
-      - go test -benchmem -run=^$ go.dev.pztrn.name/valiwork -race -bench . 
+      - go test -benchmem -run=^$ go.dev.pztrn.name/valiwork -race -bench .
     depends_on:
       - notify-start
 
   - name: notify-end
     when:
       status:
-      - success
-      - failure
+        - success
+        - failure
     image: pztrn/discordrone
     settings:
       webhook_id:
@@ -67,9 +67,9 @@ steps:
         from_secret: discord_webhook_secret
       message: "
         {{#success build.status}}
-          **{{repo.name}}#{{build.number}}@{{commit.sha}}** tested, benchmarked and linted successfully.
+        **{{repo.name}}#{{build.number}}@{{commit.sha}}** tested, benchmarked and linted successfully.
         {{ else }}
-          **{{repo.name}}#{{build.number}}@{{commit.sha}}** failed. See {{build.link}}.
+        **{{repo.name}}#{{build.number}}@{{commit.sha}}** failed. See {{build.link}}.
         {{/success}}"
     depends_on:
       - benchmark
