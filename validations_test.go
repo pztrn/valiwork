@@ -103,6 +103,7 @@ func BenchmarkRegisterValidatorAsync(b *testing.B) {
 					return nil
 				},
 			)
+
 			w.Done()
 		}()
 
@@ -419,6 +420,7 @@ func BenchmarkUnregisterValidatorAsync(b *testing.B) {
 
 		go func() {
 			_ = UnregisterValidator("string_test_validator_" + strconv.Itoa(i))
+
 			w.Done()
 		}()
 

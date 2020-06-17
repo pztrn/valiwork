@@ -86,7 +86,7 @@ func Validate(thing interface{}, validatorName string, optional ...interface{}) 
 }
 
 // ValidateMany launches many validators using one-line-call.
-// Optional might be used for passing parameters to validators, wher
+// Optional might be used for passing parameters to validators, where
 // key is a validator name and value (which is []interface{})
 // is a slice of parameters.
 func ValidateMany(thing interface{}, validatorNames []string, optional map[string][]interface{}) []interface{} {

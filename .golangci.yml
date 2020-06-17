@@ -10,8 +10,21 @@ linters:
     - gocritic
     # This linter goes crazy for nothing (almost).
     - funlen
+    # While "_test" package naming idiom is good - it isn't good for this
+    # library (at least for now).
+    - testpackage
 linters-settings:
   lll:
     line-length: 420
   gocyclo:
     min-complexity: 40
+issues:
+  exclude-rules:
+    # We do not need static errors in tests for now.
+    - path: validations_test.go
+      linters: 
+        - goerr113
+    # ...and in example.
+    - path: example/main.go
+      linters:
+        - goerr113
