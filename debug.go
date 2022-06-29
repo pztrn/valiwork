@@ -23,14 +23,11 @@
 package valiwork
 
 import (
-	// stdlib
 	"os"
 	"strconv"
 )
 
-var (
-	DEBUG bool
-)
+var DEBUG bool
 
 // Initializes debug output.
 // nolint

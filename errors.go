@@ -23,7 +23,6 @@
 package valiwork
 
 import (
-	// stdlib
 	"errors"
 )
 

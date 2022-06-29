@@ -23,30 +23,27 @@
 package valiwork
 
 import (
-	// stdlib
 	"errors"
 	"strconv"
 	"strings"
 	"sync"
 	"testing"
 
-	// local
-	"go.dev.pztrn.name/valiwork/validators"
-
-	// other
 	"github.com/stretchr/testify/require"
+	"go.dev.pztrn.name/valiwork/validators"
 )
 
 const (
 	testString = " I am test $tring"
 )
 
+// nolint:paralleltest
 func TestRegisterValidator(t *testing.T) {
 	initializeValidatorsStorage()
 
 	testCases := []struct {
-		ValidatorName string
 		ValidatorFunc validators.ValidatorFunc
+		ValidatorName string
 		ShouldFail    bool
 	}{
 		{
@@ -92,10 +89,10 @@ func BenchmarkRegisterValidator(b *testing.B) {
 func BenchmarkRegisterValidatorAsync(b *testing.B) {
 	initializeValidatorsStorage()
 
-	var w sync.WaitGroup
+	var waiter sync.WaitGroup
 
 	for i := 0; i < b.N; i++ {
-		w.Add(1)
+		waiter.Add(1)
 
 		go func() {
 			_ = RegisterValidator("string_test_validator_"+strconv.Itoa(i),
@@ -104,13 +101,14 @@ func BenchmarkRegisterValidatorAsync(b *testing.B) {
 				},
 			)
 
-			w.Done()
+			waiter.Done()
 		}()
 
-		w.Wait()
+		waiter.Wait()
 	}
 }
 
+// nolint:paralleltest
 func TestValidate(t *testing.T) {
 	initializeValidatorsStorage()
 
@@ -120,6 +118,7 @@ func TestValidate(t *testing.T) {
 		stringToValidate, ok := thing.(string)
 		if !ok {
 			errs = append(errs, errors.New("not a string"))
+
 			return errs
 		}
 
@@ -146,6 +145,7 @@ func BenchmarkValidate(b *testing.B) {
 		stringToValidate, ok := thing.(string)
 		if !ok {
 			errs = append(errs, errors.New("not a string"))
+
 			return errs
 		}
 
@@ -178,6 +178,7 @@ func BenchmarkValidateAsync(b *testing.B) {
 		stringToValidate, ok := thing.(string)
 		if !ok {
 			errs = append(errs, errors.New("not a string"))
+
 			return errs
 		}
 
@@ -194,21 +195,22 @@ func BenchmarkValidateAsync(b *testing.B) {
 
 	b.StartTimer()
 
-	var w sync.WaitGroup
+	var waiter sync.WaitGroup
 
 	for i := 0; i < b.N; i++ {
-		w.Add(1)
+		waiter.Add(1)
 
 		go func() {
 			_ = Validate(testString, "string_test1")
 
-			w.Done()
+			waiter.Done()
 		}()
 
-		w.Wait()
+		waiter.Wait()
 	}
 }
 
+// nolint:paralleltest
 func TestValidateMany(t *testing.T) {
 	initializeValidatorsStorage()
 
@@ -218,6 +220,7 @@ func TestValidateMany(t *testing.T) {
 		stringToValidate, ok := thing.(string)
 		if !ok {
 			errs = append(errs, errors.New("not a string"))
+
 			return errs
 		}
 
@@ -234,6 +237,7 @@ func TestValidateMany(t *testing.T) {
 		stringToValidate, ok := thing.(string)
 		if !ok {
 			errs = append(errs, errors.New("not a string"))
+
 			return errs
 		}
 
@@ -260,6 +264,7 @@ func BenchmarkValidateMany(b *testing.B) {
 		stringToValidate, ok := thing.(string)
 		if !ok {
 			errs = append(errs, errors.New("not a string"))
+
 			return errs
 		}
 
@@ -276,6 +281,7 @@ func BenchmarkValidateMany(b *testing.B) {
 		stringToValidate, ok := thing.(string)
 		if !ok {
 			errs = append(errs, errors.New("not a string"))
+
 			return errs
 		}
 
@@ -304,6 +310,7 @@ func BenchmarkValidateManyAsync(b *testing.B) {
 		stringToValidate, ok := thing.(string)
 		if !ok {
 			errs = append(errs, errors.New("not a string"))
+
 			return errs
 		}
 
@@ -320,6 +327,7 @@ func BenchmarkValidateManyAsync(b *testing.B) {
 		stringToValidate, ok := thing.(string)
 		if !ok {
 			errs = append(errs, errors.New("not a string"))
+
 			return errs
 		}
 
@@ -332,27 +340,28 @@ func BenchmarkValidateManyAsync(b *testing.B) {
 
 	b.StartTimer()
 
-	var w sync.WaitGroup
+	var waiter sync.WaitGroup
 
 	for i := 0; i < b.N; i++ {
-		w.Add(1)
+		waiter.Add(1)
 
 		go func() {
 			_ = ValidateMany(testString, []string{"string_test1", "string_test2"}, nil)
 
-			w.Done()
+			waiter.Done()
 		}()
 
-		w.Wait()
+		waiter.Wait()
 	}
 }
 
+// nolint:paralleltest
 func TestUnregisterValidator(t *testing.T) {
 	initializeValidatorsStorage()
 
 	testCases := []struct {
-		ValidatorName string
 		ValidatorFunc validators.ValidatorFunc
+		ValidatorName string
 	}{
 		{
 			ValidatorName: "string_test_validator",
@@ -371,6 +380,7 @@ func TestUnregisterValidator(t *testing.T) {
 	}
 }
 
+// nolint:paralleltest
 func TestUnregisterValidatorNotRegisteredValidator(t *testing.T) {
 	initializeValidatorsStorage()
 
@@ -411,19 +421,19 @@ func BenchmarkUnregisterValidatorAsync(b *testing.B) {
 		)
 	}
 
-	var w sync.WaitGroup
+	var waiter sync.WaitGroup
 
 	b.StartTimer()
 
 	for i := 0; i < b.N; i++ {
-		w.Add(1)
+		waiter.Add(1)
 
 		go func() {
 			_ = UnregisterValidator("string_test_validator_" + strconv.Itoa(i))
 
-			w.Done()
+			waiter.Done()
 		}()
 
-		w.Wait()
+		waiter.Wait()
 	}
 }

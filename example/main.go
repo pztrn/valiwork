@@ -23,12 +23,10 @@
 package main
 
 import (
-	"strings"
-	// stdlib
 	"errors"
 	"log"
+	"strings"
 
-	// other
 	"go.dev.pztrn.name/valiwork"
 )
 
@@ -40,7 +38,7 @@ func main() {
 	log.Println("Starting validation example...")
 	log.Println("WARN: to see additional valiwork output define 'VALIWORK_DEBUG' environment variable and set it to 'true'!")
 
-	//stringToValidate := " I am pretty b@d $tring"
+	// stringToValidate := " I am pretty b@d $tring"
 
 	_ = valiwork.RegisterValidator(stringValidatorName, stringValidator)
 }
@@ -51,6 +49,7 @@ func stringValidator(thing interface{}, optional ...interface{}) []interface{} {
 	stringToValidate, ok := thing.(string)
 	if !ok {
 		errs = append(errs, errors.New("passed value is not a string"))
+
 		return errs
 	}
 

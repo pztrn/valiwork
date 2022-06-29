@@ -23,16 +23,12 @@
 package valiwork
 
 import (
-	// stdlib
 	"log"
 
-	// local
 	"go.dev.pztrn.name/valiwork/validators"
 )
 
-var (
-	registeredValidators map[string]validators.ValidatorFunc
-)
+var registeredValidators map[string]validators.ValidatorFunc
 
 // nolint
 func init() {
@@ -74,6 +70,7 @@ func Validate(thing interface{}, validatorName string, optional ...interface{}) 
 
 	if !found {
 		errs = append(errs, ErrValidatorNotRegistered)
+
 		return errs
 	}
 
